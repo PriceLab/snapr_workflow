@@ -125,6 +125,8 @@ time $SNAPR_EXEC $SNAPR_OPTIONS
 
 ######## Copy and clean up results ############################################
 
+UUID=$(cat /proc/sys/kernel/random/uuid)
+SNAPR_RUN_DIR=$S3_DIR/snapr-run-$UUID/
 MAX_S3_UPLOAD_RETRIES=5
 NUM_TRIES=0
 
@@ -136,7 +138,7 @@ if [ ${KEEP} == 0 ]; then
     # Copy snapr output files to S3
     aws s3 cp \
         $OUT_DIR \
-        $S3_DIR/snapr/ \
+        $SNAPR_RUN_DIR/output-data \
         --recursive ;
 
         DIFF=`checkS3BucketIntegrity $S3_DIR/snapr $OUT_DIR`
@@ -150,10 +152,13 @@ if [ ${KEEP} == 0 ]; then
 
     if [ -n "$DIFF" ]; then
         echo "S3 upload for $OUT_DIR has FAILED after $NUM_TRIES attempts. Giving up."
-        exit 1
+        /homw/snapr_tools/bash/upload-logs.sh $SNAPR_RUN_DIR
+        exit 1 # We don't want to delete $TMP_DIR and $OUT_DIR if upload failed
     fi
 
     # Remove temporary directories
     rm -rf $TMP_DIR
 	rm -rf $OUT_DIR
 fi
+
+/homw/snapr_tools/bash/upload-logs.sh $SNAPR_RUN_DIR
