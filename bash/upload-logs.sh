@@ -6,7 +6,7 @@ else
     S3_PATH=$1/logs/
 fi
 
-SNAPR_WF_HOME="/home/snapr_tools"
+SNAPR_WF_HOME="/home/snapr_workflow"
 
 if [ -z "$S3_PATH" ]; then
     echo "usage:  $0: <s3-path>"

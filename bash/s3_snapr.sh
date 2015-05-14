@@ -152,7 +152,7 @@ if [ ${KEEP} == 0 ]; then
 
     if [ -n "$DIFF" ]; then
         echo "S3 upload for $OUT_DIR has FAILED after $NUM_TRIES attempts. Giving up."
-        /homw/snapr_tools/bash/upload-logs.sh $SNAPR_RUN_DIR
+        /home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR
         exit 1 # We don't want to delete $TMP_DIR and $OUT_DIR if upload failed
     fi
 
@@ -161,4 +161,4 @@ if [ ${KEEP} == 0 ]; then
 	rm -rf $OUT_DIR
 fi
 
-/homw/snapr_tools/bash/upload-logs.sh $SNAPR_RUN_DIR
+/home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR
