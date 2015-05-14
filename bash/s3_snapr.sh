@@ -125,7 +125,7 @@ time $SNAPR_EXEC $SNAPR_OPTIONS
 
 ######## Copy and clean up results ############################################
 
-UUID=$(cat /proc/sys/kernel/random/uuid)
+UUID=$(cat /home/run-uuid)
 SNAPR_RUN_DIR=$S3_DIR/snapr-run-$UUID/
 MAX_S3_UPLOAD_RETRIES=5
 NUM_TRIES=0
