@@ -6,6 +6,8 @@ FASTA_SRC=$1
 GTF_SRC=$2
 
 PID=$$
+
+MAX_RETRIES=5
 NUM_RETRIES=0
 touch /tmp/s3-local-file-diff$PID
 echo "empyline" > /tmp/s3-local-file-diff$PID
