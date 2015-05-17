@@ -139,6 +139,9 @@ fi
 # Install AWS CLI (this shouldn't be necessary once added to AMI)
 # pip install awscli
 
+export AWS_ACCESS_KEY_ID=$(head -1 /root/.isb)
+export AWS_SECRET_ACCESS_KEY=$(tail -1 /root/.isb)
+
 # Copy and rename assembly files from S3
 
 if [ $LOCAL == 0 ]; then
