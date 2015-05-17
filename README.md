@@ -25,17 +25,17 @@ Steps in the SNAPR pipeline - including node setup, index building, and alignmen
 If not already present on the cluster, `cd` to a directory under `/home/` and clone this repository with the following command:
 
 ```
-user@master:/home# git clone https://github.com/jaeddy/snapr_tools
+user@master:/home# git clone https://github.com/jaeddy/snapr_workflow
 ```
 
-Go ahead and `cd` into the `/home/snapr_tools/` directory before running any of the scripts below.
+Go ahead and `cd` into the `/home/snapr_workflow/` directory before running any of the scripts below.
 
 ## Setting up SNAPR environment
 
 This first script will ensure that solid-state drives (SSDs) are properly mounted on all nodes, set up the expected directory for downstream scripts, install `awscli`, and copy reference files from S3:
 
 ```
-user@master:/home/snapr_tools# bash/prep_nodes.sh
+user@master:/home/snapr_workflow# bash/prep_nodes.sh
 ```
 
 ##### *Setup options*
@@ -54,7 +54,7 @@ Other input arguments to `prep_nodes.sh` can be used to specify `qsub` submissio
 Before `snapr` can be used for alignment, use the following command to build genome and transcriptome indices on each node:
 
 ```
-user@master:/home/snapr_tools# bash/build_indices.sh
+user@master:/home/snapr_workflow# bash/build_indices.sh
 ```
 
 This script assumes that all files and directories are in place according to the previously run `prep_nodes.bash`. To build indices for a different species (human/mouse) or using different reference files, re-run `prep_nodes.sh` with these inputs.
@@ -65,7 +65,7 @@ This script assumes that all files and directories are in place according to the
 To run `snapr` on the target set of RNAseq files on S3, use the following script, which submits an individual `s3_snapr.sh` job for each file.
 
 ```
-user@master:/home/snapr_tools# bash/submit_s3_snapr.sh -b s3_bucket
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3_bucket
 ```
 
 The `s3_bucket` input should be a valid S3 address (e.g., s3://seq-file-bucket), 
@@ -81,7 +81,7 @@ The following input arguments can be used to provide more information about the 
 This argument can be used to specify the name of any top-level directories containing groups of samples. For example:
 
 ```
-user@master:/home/snapr_tools# aws s3 ls s3://seq-file-bucket
+user@master:/home/snapr_workflow# aws s3 ls s3://seq-file-bucket
                            PRE Case_Samples/
                            PRE Control_Samples/
 ```
@@ -89,7 +89,7 @@ user@master:/home/snapr_tools# aws s3 ls s3://seq-file-bucket
 In this case, an appropriate input for `subdir` would be `Case_Samples`. The final command would be structured as follows:
 
 ```
-user@master:/snapr/snapr_tools# shell/submit_s3_snapr.sh -b s3://seq-file-bucket -s Control_Samples
+user@master:/snapr/snapr_workflow# shell/submit_s3_snapr.sh -b s3://seq-file-bucket -s Control_Samples
 ```
 
 ###### `-L file_list`
@@ -97,7 +97,7 @@ user@master:/snapr/snapr_tools# shell/submit_s3_snapr.sh -b s3://seq-file-bucket
 This argument tells the submit script to refer to a local file containing a list of paths for data on the S3 bucket. For example:
 
 ```
-user@master:/snapr/snapr_tools# head file_list
+user@master:/snapr/snapr_workflow# head file_list
 s3://seq-file-bucket/Case_Samples/sample1_reads_R1.fastq.gz
 s3://seq-file-bucket/Case_Samples/sample1_reads_R1.fastq.gz
 s3://seq-file-bucket/Case_Samples/sample2_reads_R2.fastq.gz
@@ -152,19 +152,19 @@ For this example, reference assembly files specific to chromosome 8 are provided
 **1)**  Use the following command to set up all nodes on the cluster:
 
 ```
-user@master:/home/snapr_tools# bash/prep_nodes.sh -g Homo_sampiens.GRCh38.dna.chromosome.8.fa -x chrom8.gtf
+user@master:/home/snapr_workflow# bash/prep_nodes.sh -g Homo_sampiens.GRCh38.dna.chromosome.8.fa -x chrom8.gtf
 ```
 
 **2)** Once all `prep_nodes.sh` jobs have finished running (check progress with the `qstat` command), build genome and transcriptome indices on all nodes. 
 
 ```
-user@master:/home/snapr_tools# bash/build_indices.sh
+user@master:/home/snapr_workflow# bash/build_indices.sh
 ```
 
 **3)** Process all paired FASTQ files in the bucket `s3://rna-editing-exdata` under the subdirectory `chr8`.
 
 ```
-user@master:/home/snapr_tools# bash/submit_s3_snapr.sh -b s3://rna-editing-exdata -s chr8 -f fastq -m paired -l "_[1-2]"
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3://rna-editing-exdata -s chr8 -f fastq -m paired -l "_[1-2]"
 ```
 
 **Note:** You can use the `-d` flag to preview the first job that will be submitted to SGE, along with all inputs that would be provided to `s3_snapr.sh`. The end of the printed output should look like this:
@@ -182,7 +182,7 @@ This example also uses the chromosome 8 reference files described above. Steps *
 **3)** Process all BAM files in the bucket `s3://rna-editing-exdata` under the subdirectory `chr8`.
 
 ```
-user@master:/home/snapr_tools# bash/submit_s3_snapr.sh -b s3://rna-editing-exdata -s chr8 -f bam -m paired
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3://rna-editing-exdata -s chr8 -f bam -m paired
 ```
 
 With the `-d` flag included, the output should look like this:
