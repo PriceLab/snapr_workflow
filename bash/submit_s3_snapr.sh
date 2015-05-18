@@ -10,11 +10,9 @@
 ######## Specify defaults & examples ##########################################
 
 # Example inputs for S3 bucket subdirectory
-# BUCKET="s3://mayo-prelim-rnaseq"
-# SUBDIR="AD_Samples"
-# BUCKET="s3://ufl-u01-rnaseq"
-# BUCKET="s3://rna-editing-exdata"
-# SUBDIR="chr8"
+# S3_PATH="s3://mayo-prelim-rnaseq"
+# S3_PATH="s3://ufl-u01-rnaseq"
+# S3_PATH="s3://rna-editing-exdata"
 
 # Default options for file format and alignment mode
 MODE=paired
@@ -46,8 +44,7 @@ function usage {
 
 while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
     case "$ARG" in
-        b ) BUCKET=$OPTARG;;
-        s ) SUBDIR=$OPTARG;;
+        b ) S3_PATH=$OPTARG;;
         L ) IN_LIST=$OPTARG; FILE_LIST=$IN_LIST;;
         m ) MODE=$OPTARG;;
         f ) FORMAT=$OPTARG;;
@@ -68,6 +65,9 @@ while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
 done
 shift $(($OPTIND - 1))
 
+if [[ $S3_PATH != */ ]]; then
+    S3_PATH=$S3_PATH/
+fi
 
 ######## Construct submission file with qsub options ##########################
 
@@ -115,7 +115,7 @@ EOF
 if [ ! -e "$FILE_LIST" ]; then
     # Get full list of all files from S3 bucket for the specified group
     FILE_LIST=`mktemp s3-seq-files.XXXXXXXX`
-    aws s3 ls ${BUCKET}/${SUBDIR} --recursive \
+    aws s3 ls ${S3_PATH} --recursive \
         | grep ${FORMAT} \
         | grep -v .snap \
         | awk '{print $4}' \
@@ -176,16 +176,14 @@ get_handle ${FILE_LIST} | uniq | while read HANDLE; do
 
     FILE_MATCH=$(grep $HANDLE $FILE_LIST)
 
-    PATH1=${BUCKET}/$(echo $FILE_MATCH | awk '{print $1}')
-    INPUT="-d ${BUCKET}/${SUBDIR} -1 ${PATH1}"
-    if [ -z ${SUBDIR+x} ]; then
-        INPUT="-d ${BUCKET} -1 ${PATH1}"
-    fi
+    BUCKET=s3://$(echo $S3_PATH | cut -d "/" -f 3)/
+    PATH1=${BUCKET}$(echo $FILE_MATCH | awk '{print $1}')
+    INPUT="-d ${S3_PATH} -1 ${PATH1}"
 
     # Define second input file path only if extension format is FASTQ (i.e.,
     # the reprocess flag is undefined) and mode is paired
     if [ -z ${REPROCESS+x} ] && [ $MODE == paired ]; then
-        PATH2=${BUCKET}/$(echo $FILE_MATCH | awk '{print $2}')
+        PATH2=${BUCKET}$(echo $FILE_MATCH | awk '{print $2}')
         INPUT="${INPUT} -2 ${PATH2}"
     fi
 
@@ -219,3 +217,4 @@ rm $QSUB_BASE
 if [ ! -e "$IN_LIST" ]; then
     rm $FILE_LIST
 fi
+
