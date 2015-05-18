@@ -68,29 +68,13 @@ To run `snapr` on the target set of RNAseq files on S3, use the following script
 user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3_bucket
 ```
 
-The `s3_bucket` input should be a valid S3 address (e.g., s3://seq-file-bucket), 
+The `s3_bucket` input should be a valid S3 address/path (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). 
 
-This step will take care of all data transfer from and to S3 as well as generation of `snapr` alignment results (to be stored on S3).
+This step will take care of all data transfer from and to S3 as well as generation of `snapr-<unique-id>` alignment results (to be stored on S3).
 
 ##### *Submit/data options*
 
 The following input arguments can be used to provide more information about the data to be processed:
-
-###### `-s subdir`
-
-This argument can be used to specify the name of any top-level directories containing groups of samples. For example:
-
-```
-user@master:/home/snapr_workflow# aws s3 ls s3://seq-file-bucket
-                           PRE Case_Samples/
-                           PRE Control_Samples/
-```
-
-In this case, an appropriate input for `subdir` would be `Case_Samples`. The final command would be structured as follows:
-
-```
-user@master:/snapr/snapr_workflow# shell/submit_s3_snapr.sh -b s3://seq-file-bucket -s Control_Samples
-```
 
 ###### `-L file_list`
 
