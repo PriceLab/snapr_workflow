@@ -64,9 +64,6 @@ case "$SPECIES" in
         ;;
 esac
 
-# Create and store uuid for this cluster/run
-cat /proc/sys/kernel/random/uuid > /home/run-uuid
-
 ######## Construct submission file with qsub & job settings ###################
 
 qhost | awk 'NR>2 {print $1}' | grep -v global | while read NODE; do

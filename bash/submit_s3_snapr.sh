@@ -69,6 +69,9 @@ if [[ $S3_PATH != */ ]]; then
     S3_PATH=$S3_PATH/
 fi
 
+# Create and store initial uuid for this cluster
+cat /proc/sys/kernel/random/uuid > /home/run-uuid
+
 ######## Construct submission file with qsub options ##########################
 
 QSUB_BASE=`mktemp qsub-settings.XXXXXXXX`
