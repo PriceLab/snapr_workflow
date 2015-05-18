@@ -70,7 +70,7 @@ user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3_bucket
 
 The `s3_bucket` input should be a valid S3 address/path (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). 
 
-This step will take care of all data transfer from and to S3 as well as generation of `snapr-<unique-id>` alignment results (to be stored on S3).
+This step will take care of all data transfer from and to S3 as well as generation of `snapr-<unique-id>` alignment results (to be stored on S3). IMPORTANT: snapr_worflow will looks for all pairs of fastq files in any subdirectories of and create a snapr job for each pair. Unique pairs are determined based on their pairs so if sample-name-R1.fastq.gz and sample-name-R2.fastq.gz are found multiple times in subdirectories their first occurence (depth first search) will be used.
 
 ##### *Submit/data options*
 
