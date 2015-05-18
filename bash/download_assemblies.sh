@@ -37,10 +37,12 @@ function downloadWithRetries {
         fi
         let NUM_RETRIES++
     done
+
+    rm /tmp/*$RAND
 }
 
 
-echo "Kicking off download for $FASTA_SRC and $GTF_SRC."
+echo "Kicking off parallel download of $FASTA_SRC and $GTF_SRC."
 
 # Kick off gtf file in background to save time and because we know it will complete downloading before the fasta file
 # Capture process output into a file we can print to this process's stdout when done
