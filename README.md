@@ -25,7 +25,7 @@ Steps in the SNAPR pipeline - including node setup, index building, and alignmen
 If not already present on the cluster, `cd` to a directory under `/home/` and clone this repository with the following command:
 
 ```
-user@master:/home# git clone https://github.com/jaeddy/snapr_workflow
+user@master:/home# git clone https://github.com/PriceLab/snapr_workflow.git
 ```
 
 Go ahead and `cd` into the `/home/snapr_workflow/` directory before running any of the scripts below.
