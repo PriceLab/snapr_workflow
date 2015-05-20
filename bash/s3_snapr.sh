@@ -26,15 +26,6 @@ function usage {
 	echo
 }
 
-function checkS3BucketIntegrity {
-    PID=`echo $$`
-    S3_OUT_DIR=$1
-    LOCAL_DIR=$2
-    aws s3 ls $S3_OUT_DIR | awk '{print $3}' | sort > /tmp/s3-output$PID
-    ls -la $LOCAL_DIR | awk '{print $5}' | tail -n +4 | sort > /tmp/fs-output$PID
-    echo `diff /tmp/s3-output$PID /tmp/fs-output$PID`
-}
-
 while getopts "m:rd:1:2:l:g:t:x:kh" ARG; do
 	case "$ARG" in
 	    m ) MODE=$OPTARG;;
@@ -126,23 +117,26 @@ time $SNAPR_EXEC $SNAPR_OPTIONS
 ######## Copy and clean up results ############################################
 
 UUID=$(cat /home/run-uuid)
-SNAPR_RUN_DIR=$S3_DIR/snapr-run-$UUID/
+SNAPR_RUN_DIR=${S3_DIR}snapr-run-$UUID
 MAX_S3_UPLOAD_RETRIES=5
 NUM_TRIES=0
 
 if [ ${KEEP} == 0 ]; then
     DIFF="  "
-
-    while [ -n "$DIFF" ] && [ $NUM_TRIES -lt $MAX_S3_UPLOAD_RETRIES ] 
+    RAND=$RANDOM
+    S3_LS_OUT="onevalue"
+    FS_LS_OUT="anothervalue"
+    while [ "$S3_LS_OUT" != "$FS_LS_OUT" ] && [ $NUM_TRIES -lt $MAX_S3_UPLOAD_RETRIES ] 
     do
-    # Copy snapr output files to S3
-    aws s3 cp \
+        # Copy snapr output files to S3
+        aws s3 cp \
         $OUT_DIR \
         $SNAPR_RUN_DIR/output-data \
         --recursive ;
 
-        DIFF=`checkS3BucketIntegrity $S3_DIR/snapr $OUT_DIR`
-	if [ -n "$DIFF" ]; then
+        S3_LS_OUT=$(aws s3 ls ${SNAPR_RUN_DIR}/output-data/ | awk '{print $3}' | sort | tr -d ' \t\n\r\f')
+        FS_LS_OUT=$(ls -la $OUT_DIR | awk '{print $5}' | tail -n +4 | sort | tr -d ' \t\n\r\f')
+        if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
             let NUM_TRIES++
 	    echo "S3 upload for $OUT_DIR has FAILED on trial $NUM_TRIES. Retrying."
 	else
@@ -150,7 +144,7 @@ if [ ${KEEP} == 0 ]; then
 	fi
     done
 
-    if [ -n "$DIFF" ]; then
+    if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
         echo "S3 upload for $OUT_DIR has FAILED after $NUM_TRIES attempts. Giving up."
         /home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR
         exit 1 # We don't want to delete $TMP_DIR and $OUT_DIR if upload failed
