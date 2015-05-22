@@ -122,8 +122,6 @@ MAX_S3_UPLOAD_RETRIES=5
 NUM_TRIES=0
 
 if [ ${KEEP} == 0 ]; then
-    DIFF="  "
-    RAND=$RANDOM
     S3_LS_OUT="onevalue"
     FS_LS_OUT="anothervalue"
     while [ "$S3_LS_OUT" != "$FS_LS_OUT" ] && [ $NUM_TRIES -lt $MAX_S3_UPLOAD_RETRIES ] 
@@ -132,9 +130,9 @@ if [ ${KEEP} == 0 ]; then
         aws s3 cp \
         $OUT_DIR \
         $SNAPR_RUN_DIR/output-data \
-        --recursive ;
+        --recursive --exclude "*.tmp" ;
 
-        S3_LS_OUT=$(aws s3 ls ${SNAPR_RUN_DIR}/output-data/ | awk '{print $3}' | sort | tr -d ' \t\n\r\f')
+        S3_LS_OUT=$(aws s3 ls ${SNAPR_RUN_DIR}/output-data/ | awk '{print $3}' | grep -v ".*\.tmp$" | sort | tr -d ' \t\n\r\f')
         FS_LS_OUT=$(ls -la $OUT_DIR | awk '{print $5}' | tail -n +4 | sort | tr -d ' \t\n\r\f')
         if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
             let NUM_TRIES++
