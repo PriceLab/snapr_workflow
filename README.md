@@ -15,7 +15,7 @@ Steps in the SNAPR pipeline - including node setup, index building, and alignmen
 
 ##### *Cluster details*
 
-> **AMI:** ami-57782067  
+> **AMI:** ami-079daf37  
 > **Instance type:** r3.4xlarge  
 > **Availability zone:** us-west-2b
 
@@ -32,7 +32,7 @@ Go ahead and `cd` into the `/home/snapr_workflow/` directory before running any 
 
 ## Setting up SNAPR environment
 
-This first script will ensure that solid-state drives (SSDs) are properly mounted on all nodes, set up the expected directory for downstream scripts, install `awscli`, and copy reference files from S3:
+This first script will ensure that solid-state drives (SSDs) are properly mounted on all nodes, set up the expected directory for downstream scripts, copy reference files from S3 and build snapr indices:
 
 ```
 user@master:/home/snapr_workflow# bash/prep_nodes.sh
@@ -48,16 +48,6 @@ By default, running this script with no additional inputs will prepare all nodes
 Additional options for each can be specified using the following arguments: `-g fasta_file` and `-x gtf_file` (to see a list of available reference files, use `aws s3 ls s3://snapr-ref-assemblies`). Note: if you want to copy files for aligning mouse RNA-seq, use the `-s mouse` argument to specify the species. You can also provide paths to local reference files by adding the `-L` flag.
 
 Other input arguments to `prep_nodes.sh` can be used to specify `qsub` submission settings.
-
-## Building indices
-
-Before `snapr` can be used for alignment, use the following command to build genome and transcriptome indices on each node:
-
-```
-user@master:/home/snapr_workflow# bash/build_indices.sh
-```
-
-This script assumes that all files and directories are in place according to the previously run `prep_nodes.bash`. To build indices for a different species (human/mouse) or using different reference files, re-run `prep_nodes.sh` with these inputs.
 
 
 ## S3 data transfer and alignment
