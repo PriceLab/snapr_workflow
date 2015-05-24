@@ -148,6 +148,12 @@ else
     cp $GTF_FILE /resources/assemblies/ref-transcriptome.gtf ;
 fi
 
+# Build genome index
+time snapr index /resources/assemblies/ref-genome.fa /resources/genome/ -bSpace 
+
+# Build transcriptome index
+time snapr transcriptome /resources/assemblies/ref-transcriptome.gtf /resources/assemblies/ref-genome.fa /resources/transcriptome/ -bSpace 
+
 EOF
 
 if [ $DISPONLY == 1 ]; then

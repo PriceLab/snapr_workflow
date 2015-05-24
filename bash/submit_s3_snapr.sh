@@ -38,7 +38,7 @@ DISPONLY=0 # 1: print job settings vs. 0: submit with qsub
 ######## Parse inputs #########################################################
 
 function usage {
-    echo "$0: -b s3_bucket [-s subdir] [-L file_list] [-m mode (paired/single)] [-f format (bam/fastq)] [-l pair_file_label] [-g genome_index] [-t transcriptome_index] [-x ref_transcriptome] [-p num_procs] [-q queue] [-N jobname] [-M mem(3.8G,15.8G)] [-E email_address] [-k] [-d]"
+    echo "$0: -b s3_bucket [-L file_list] [-m mode (paired/single)] [-f format (bam/fastq)] [-l pair_file_label] [-g genome_index] [-t transcriptome_index] [-x ref_transcriptome] [-p num_procs] [-q queue] [-N jobname] [-M mem(3.8G,15.8G)] [-E email_address] [-k] [-d]"
     echo
 }
 
