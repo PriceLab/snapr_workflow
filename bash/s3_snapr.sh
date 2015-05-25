@@ -116,7 +116,7 @@ time $SNAPR_EXEC $SNAPR_OPTIONS
 
 ######## Copy and clean up results ############################################
 
-UUID=$(cat /home/run-uuid)
+UUID=$(cat /home/run-id)
 SNAPR_RUN_DIR=${S3_DIR}snapr-run-$UUID
 MAX_S3_UPLOAD_RETRIES=5
 NUM_TRIES=0
@@ -153,4 +153,7 @@ if [ ${KEEP} == 0 ]; then
 	rm -rf $OUT_DIR
 fi
 
-/home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR
+echo Completed output upload. Beginning log upload
+echo
+echo `date` Uploading logs for run-id: `cat /home/run-id` >> log-upload.log
+/home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR log-upload.log >> log-upload.log 2>&1

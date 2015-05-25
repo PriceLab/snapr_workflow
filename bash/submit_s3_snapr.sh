@@ -69,8 +69,8 @@ if [[ $S3_PATH != */ ]]; then
     S3_PATH=$S3_PATH/
 fi
 
-# Create and store initial uuid for this cluster
-cat /proc/sys/kernel/random/uuid > /home/run-uuid
+# Create and store initial unique id for this cluster
+echo $(($(date +'%s * 1000 + %-N / 1000000')))-$RANDOM > /home/run-id
 
 ######## Construct submission file with qsub options ##########################
 
