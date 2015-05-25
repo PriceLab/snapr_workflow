@@ -13,6 +13,7 @@ HUMAN_FASTA="Homo_sapiens.GRCh38.dna.SORTED.fa"
 HUMAN_GTF="Homo_sapiens.GRCh38.77.gtf"
 MOUSE_FASTA="Mus_musculus.GRCm38.75.dna.SORTED.fa"
 MOUSE_GTF="Mus_musculus.GRCm38.75.gtf"
+TRANSCRIPTOME_BUILD_OUT=`mktemp tr.XXXXX`
 
 # Default for assuming input ref file is local or on S3
 LOCAL=0
@@ -148,11 +149,13 @@ else
     cp $GTF_FILE /resources/assemblies/ref-transcriptome.gtf ;
 fi
 
+# Build transcriptome index
+time snapr transcriptome /resources/assemblies/ref-transcriptome.gtf /resources/assemblies/ref-genome.fa /resources/transcriptome/ -bSpace > $TRANSCRIPTOME_BUILD_OUT 2>&1 &
+
 # Build genome index
 time snapr index /resources/assemblies/ref-genome.fa /resources/genome/ -bSpace 
 
-# Build transcriptome index
-time snapr transcriptome /resources/assemblies/ref-transcriptome.gtf /resources/assemblies/ref-genome.fa /resources/transcriptome/ -bSpace 
+cat $TRANSCRIPTOME_BUILD_OUT
 
 EOF
 
