@@ -74,9 +74,25 @@ FILE1=${TMP_DIR}${FILE_NAME}
 
 # Download S3 files
 echo "Copying $PATH1 to $FILE1"
-aws s3 cp \
-    $PATH1 \
-    $FILE1 ;
+
+MAX_S3_UPLOAD_RETRIES=5
+NUM_TRIES=0
+S3_LS_OUT="onevalue"
+FS_LS_OUT="anothervalue"
+while [ "$S3_LS_OUT" != "$FS_LS_OUT"  ] && [ $NUM_TRIES -lt $MAX_S3_UPLOAD_RETRIES ] 
+do
+    aws s3 cp $PATH1 $FILE1 
+    
+    S3_LS_OUT=$(aws s3 ls $PATH1 | awk '{print $3}' | sort | tr -d ' \t\n\r\f')
+    FS_LS_OUT=$(ls -la $FILE1 | awk '{print $5}' | sort | tr -d ' \t\n\r\f')
+    if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
+        let NUM_TRIES++
+        echo S3 upload for $PATH1 has FAILED on trial $NUM_TRIES. Retrying.
+    else
+        echo S3 download for $PATH1 has SUCCEEDED on trial $NUM_TRIES. 
+    fi
+done
+
 echo
 
 # Get second FASTQ file if necessary
@@ -85,10 +101,23 @@ then
     FILE2=${TMP_DIR}${PATH2##*/}
 
     echo "Copying $PATH2 to $FILE2"
-    aws s3 cp \
-        $PATH2 \
-        $FILE2 ;
-    echo
+
+    NUM_TRIES=0
+    S3_LS_OUT="onevalue"
+    FS_LS_OUT="anothervalue"
+    while [ "$S3_LS_OUT" != "$FS_LS_OUT"  ] && [ $NUM_TRIES -lt $MAX_S3_UPLOAD_RETRIES ] 
+    do
+        aws s3 cp $PATH2 $FILE2
+
+        S3_LS_OUT=$(aws s3 ls $PATH2 | awk '{print $3}' | sort | tr -d ' \t\n\r\f')
+        FS_LS_OUT=$(ls -la $FILE2 | awk '{print $5}' | sort | tr -d ' \t\n\r\f')
+        if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
+            let NUM_TRIES++
+            echo S3 upload for $PATH2 has FAILED on trial $NUM_TRIES. Retrying.
+        else
+            echo S3 download for $PATH2 has SUCCEEDED on trial $NUM_TRIES. 
+        fi
+    done
 fi
 echo
 
