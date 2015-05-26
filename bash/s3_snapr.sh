@@ -173,7 +173,8 @@ if [ ${KEEP} == 0 ]; then
 
     if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
         echo "S3 upload for $OUT_DIR has FAILED after $NUM_TRIES attempts. Giving up."
-        /home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR
+        echo `date` Uploading logs for run-id: `cat /home/run-id` >> log-upload.log
+        /home/snapr_workflow/bash/upload-logs.sh $SNAPR_RUN_DIR log-upload.log >> log-upload.log 2>&1
         exit 1 # We don't want to delete $TMP_DIR and $OUT_DIR if upload failed
     fi
 

@@ -143,7 +143,7 @@ export AWS_SECRET_ACCESS_KEY=$(tail -1 /root/.isb)
 # Copy and rename assembly files from S3
 
 if [ $LOCAL == 0 ]; then
-    /home/snapr_workflow/bash/download_assemblies.sh $FASTA_SRC $GTF_SRC
+    time /home/snapr_workflow/bash/download_assemblies.sh $FASTA_SRC $GTF_SRC
 else
     cp $FASTA_FILE /resources/assemblies/ref-genome.fa ;
     cp $GTF_FILE /resources/assemblies/ref-transcriptome.gtf ;
