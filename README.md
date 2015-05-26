@@ -13,10 +13,10 @@ The code is designed to run on an AMI that includes all required binaries for ru
 
 Steps in the SNAPR pipeline - including node setup, index building, and alignment - are distributed across cluster nodes using the Sun Grid Engine scheduling system.
 
-##### *Cluster details*
+##### *Basic example of cluster details*
 
 > **AMI:** ami-079daf37  
-> **Instance type:** r3.4xlarge  
+> **Instance type:** c3.8xlarge  
 > **Availability zone:** us-west-2b
 
 
