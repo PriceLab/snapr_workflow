@@ -134,7 +134,7 @@ mkdir "$OUT_DIR"
 OUTPUT_FILE=${OUT_DIR}${PREFIX}.snap.bam
 
 REF_FILES="${GENOME} ${TRANSCRIPTOME} ${GTF_FILE}"
-OTHER="-M -rg ${PREFIX} -so -ku"
+OTHER="-b -M -rg ${PREFIX} -ku"
 
 SNAPR_OPTIONS="${MODE} ${REF_FILES} ${INPUT} -o ${OUTPUT_FILE} ${OTHER}"
 
@@ -162,7 +162,7 @@ if [ ${KEEP} == 0 ]; then
         --recursive --exclude "*.tmp" ;
 
         S3_LS_OUT=$(aws s3 ls ${SNAPR_RUN_DIR}/output-data/ | awk '{print $3}' | grep -v ".*\.tmp$" | sort | tr -d ' \t\n\r\f')
-        FS_LS_OUT=$(ls -la $OUT_DIR | awk '{print $5}' | tail -n +4 | sort | tr -d ' \t\n\r\f')
+        FS_LS_OUT=$(ls -la $OUT_DIR | awk '{print $5}' | tail -n +4 | grep -v ".*\.tmp$" | sort | tr -d ' \t\n\r\f')
         if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
             let NUM_TRIES++
 	    echo "S3 upload for $OUT_DIR has FAILED on trial $NUM_TRIES. Retrying."
