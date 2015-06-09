@@ -134,7 +134,7 @@ mkdir "$OUT_DIR"
 OUTPUT_FILE=${OUT_DIR}${PREFIX}.snap.bam
 
 REF_FILES="${GENOME} ${TRANSCRIPTOME} ${GTF_FILE}"
-OTHER="-b -M -rg ${PREFIX} -ku"
+OTHER="-b -M -rg ${PREFIX} -so -ku"
 
 SNAPR_OPTIONS="${MODE} ${REF_FILES} ${INPUT} -o ${OUTPUT_FILE} ${OTHER}"
 
@@ -142,6 +142,11 @@ echo "$SNAPR_EXEC $SNAPR_OPTIONS"
 
 # Run SNAPR
 time $SNAPR_EXEC $SNAPR_OPTIONS
+
+# Sort output with samtools and get rid of unsorted file
+#SAMTOOLS_COMMAND="samtools sort -@ `nproc` -m 50G ${OUTPUT_FILE} ${OUT_DIR}${PREFIX}.snap.sorted.bam"
+#echo "Sorting output with samtools. Command: " $SAMTOOLS_COMMAND
+#time $SAMTOOLS_COMAND #&& rm ${OUTPUT_FILE}
 
 ######## Copy and clean up results ############################################
 
