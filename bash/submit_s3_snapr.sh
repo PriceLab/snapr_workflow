@@ -114,16 +114,20 @@ EOF
 
 ######## Assemble & prepare inputs for s3_snapr.bash ##########################
 
+BUCKET=s3://$(echo $S3_PATH | cut -d "/" -f 3)/
+
 # Search S3 bucket for files, if no input list is provided
 if [ ! -e "$FILE_LIST" ]; then
     # Get full list of all files from S3 bucket for the specified group
     FILE_LIST=`mktemp s3-seq-files.XXXXXXXX`
-    aws s3 ls ${S3_PATH} --recursive \
-        | grep ${FORMAT} \
-        | grep -v .snap \
-        | awk '{print $4}' \
-        > $FILE_LIST ;
+    echo bucket is $BUCKET
+    SED_BUCKET=`echo ${BUCKET} | sed 's/\//\\\\\//g'`
+    echo sed bucket is: $SED_BUCKET
+    aws s3 ls ${S3_PATH} --recursive | grep ${FORMAT} | grep -v .snap | awk '{print $4}' | tr " " "\n" | sed s/^/$SED_BUCKET/g > $FILE_LIST ;
 fi
+
+echo FILE_LIST is
+cat $FILE_LIST
 
 NUM_FILES=`expr $(wc -l ${FILE_LIST} | awk '{print $1}')`
 echo "$NUM_FILES ${FORMAT} files detected..."
@@ -179,14 +183,13 @@ get_handle ${FILE_LIST} | uniq | while read HANDLE; do
 
     FILE_MATCH=$(grep $HANDLE $FILE_LIST)
 
-    BUCKET=s3://$(echo $S3_PATH | cut -d "/" -f 3)/
-    PATH1=${BUCKET}$(echo $FILE_MATCH | awk '{print $1}')
+    PATH1=$(echo $FILE_MATCH | awk '{print $1}')
     INPUT="-d ${S3_PATH} -1 ${PATH1}"
 
     # Define second input file path only if extension format is FASTQ (i.e.,
     # the reprocess flag is undefined) and mode is paired
     if [ -z ${REPROCESS+x} ] && [ $MODE == paired ]; then
-        PATH2=${BUCKET}$(echo $FILE_MATCH | awk '{print $2}')
+        PATH2=$(echo $FILE_MATCH | awk '{print $2}')
         INPUT="${INPUT} -2 ${PATH2}"
     fi
 

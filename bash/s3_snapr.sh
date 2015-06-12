@@ -168,6 +168,11 @@ if [ ${KEEP} == 0 ]; then
 
         S3_LS_OUT=$(aws s3 ls ${SNAPR_RUN_DIR}/output-data/ | awk '{print $3}' | grep -v ".*\.tmp$" | sort | tr -d ' \t\n\r\f')
         FS_LS_OUT=$(ls -la $OUT_DIR | awk '{print $5}' | tail -n +4 | grep -v ".*\.tmp$" | sort | tr -d ' \t\n\r\f')
+
+	echo s3 ls is: `aws s3 ls ${SNAPR_RUN_DIR}/output-data/`
+	echo fs ls is: `ls -la $OUT_DIR`
+	echo s3 output is $S3_LS_OUT
+        echo fs output is $FS_LS_OUT
         if [ "$S3_LS_OUT" != "$FS_LS_OUT" ]; then
             let NUM_TRIES++
 	    echo "S3 upload for $OUT_DIR has FAILED on trial $NUM_TRIES. Retrying."
