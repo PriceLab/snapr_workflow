@@ -44,7 +44,7 @@ function usage {
 
 while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
     case "$ARG" in
-        b ) S3_PATH=$OPTARG;;
+        p ) S3_PATH=$OPTARG;;
         L ) IN_LIST=$OPTARG; FILE_LIST=$IN_LIST;;
         m ) MODE=$OPTARG;;
         f ) FORMAT=$OPTARG;;
