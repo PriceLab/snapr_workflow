@@ -45,39 +45,40 @@ By default, running this script with no additional inputs will prepare all nodes
 * **Genome assembly:** Homo_sapiens.GRCh38.dna.SORTED.fa  
 * **Transcriptome assembly:** Homo_sapiens.GRCh38.77.gtf  
 
-Additional options for each can be specified using the following arguments: `-g fasta_file` and `-x gtf_file` (to see a list of available reference files, use `aws s3 ls s3://snapr-ref-assemblies`). Note: if you want to copy files for aligning mouse RNA-seq, use the `-s mouse` argument to specify the species. You can also provide paths to local reference files by adding the `-L` flag.
+Additional options for each can be specified using the following arguments: `-g fasta_file` and `-x gtf_file` (to see a list of available reference files, use `aws s3 ls s3://snapr-ref-assemblies`). Note: if you want to copy files for aligning mouse RNA-seq, use the `-s mouse` argument to specify the species.
 
 Other input arguments to `prep_nodes.sh` can be used to specify `qsub` submission settings.
 
 
 ## S3 data transfer and alignment
 
-To run `snapr` on the target set of RNAseq files on S3, use the following script, which submits an individual `s3_snapr.sh` job for each file.
+To run `snapr` on a target set of RNAseq files in an S3 bucket, use `submit_s3_snapr.sh` with the following options to submit an individual `s3_snapr.sh` job for each pair of fastq files or each bam file (using the `-f` flag) in the s3 path. `submit_s3_snapr.sh` will by default look for all pairs of fastq files in the path provided and create a snapr job for each pair. File pairs are determined based on their names so if sample-name-R1.fastq.gz and sample-name-R2.fastq.gz exist in the path they are considered a pair. But using the `-f` option one can instruct `submit_s3_snapr.sh` to look for bam files instead since snapr can reprocess the reads in bam files.
 
 ```
-user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -b s3_bucket
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -p s3_path
 ```
 
-The `s3_bucket` input should be a valid S3 address/path (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). 
+The `s3_path` input should be a valid S3 address/path (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). 
 
-This step will take care of all data transfer from and to S3 as well as generation of `snapr-<unique-id>` alignment results (to be stored on S3). IMPORTANT: snapr_worflow will looks for all pairs of fastq files in any subdirectories of and create a snapr job for each pair. Unique pairs are determined based on their pairs so if sample-name-R1.fastq.gz and sample-name-R2.fastq.gz are found multiple times in subdirectories their first occurence (depth first search) will be used.
+One can also run `snapr` using `submit_s3_snapr.sh` by passing in a file containing a list of s3 paths with the `-L s3_path_list.txt` option like so:
+
+```
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -L s3_path_list.txt
+```
+
+It is up to the user to ensure that both mates of the pairs of fastq files are in the file. The pairs in files don't need to be in sequence but the script automatically considers the first mate in the pair it sees as R1 so for consistency the R1 for a pair needs to come before the R2 in the file. Bam files can also be used in lists but not simultaneously with fastq files since the `-f` option informs the script which mode to run in. An example file for fastq files:
+
+```
+user@master:/snapr/snapr_workflow# head s3_path_list.txt
+s3://seq-file-bucket/Case_Samples/sample1_reads_R1.fastq.gz
+s3://seq-file-bucket/Case_Samples/sample1_reads_R2.fastq.gz
+s3://seq-file-bucket/Case_Samples/sample2_reads_R1.fastq.gz
+s3://seq-file-bucket/Case_Samples/sample2_reads_R2.fastq.gz
+```
 
 ##### *Submit/data options*
 
 The following input arguments can be used to provide more information about the data to be processed:
-
-###### `-L file_list`
-
-This argument tells the submit script to refer to a local file containing a list of paths for data on the S3 bucket. For example:
-
-```
-user@master:/snapr/snapr_workflow# head file_list
-s3://seq-file-bucket/Case_Samples/sample1_reads_R1.fastq.gz
-s3://seq-file-bucket/Case_Samples/sample1_reads_R1.fastq.gz
-s3://seq-file-bucket/Case_Samples/sample2_reads_R2.fastq.gz
-s3://seq-file-bucket/Case_Samples/sample2_reads_R2.fastq.gz
-```
-If a list of paths is provided, the submit script will not automatically search the S3 bucket for relevant filetypes and will only process the files listed. **Note:** if processing a list of files in a bucket subdirectory (see `-s subdir` above), listed paths should begin with the directory name, not with the bucket address.
 
 ###### `-f format (fastq/bam)`
 
