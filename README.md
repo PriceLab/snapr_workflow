@@ -55,18 +55,18 @@ Other input arguments to `prep_nodes.sh` can be used to specify `qsub` submissio
 To run `snapr` on a target set of RNAseq files in an S3 bucket, use `submit_s3_snapr.sh` with the following options to submit an individual `s3_snapr.sh` job for each pair of fastq files or each bam file (using the `-f` flag) in the s3 path. `submit_s3_snapr.sh` will by default look for all pairs of fastq files in the path provided and create a snapr job for each pair. File pairs are determined based on their names so if sample-name-R1.fastq.gz and sample-name-R2.fastq.gz exist in the path they are considered a pair. But using the `-f` option one can instruct `submit_s3_snapr.sh` to look for bam files instead since snapr can reprocess the reads in bam files.
 
 ```
-user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -p s3_path
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -p s3_path -o output_s3_path
 ```
 
-The `s3_path` input should be a valid S3 address/path (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). 
+The `s3_path` and `output_s3_path` inputs should be valid S3 addresses/paths (e.g., s3://seq-file-bucket or s3://seq-file-bucket/subdirectory/). The `-o` is optional in this usage and will defailt to the value of `-p`.
 
-One can also run `snapr` using `submit_s3_snapr.sh` by passing in a file containing a list of s3 paths with the `-L s3_path_list.txt` option like so:
+One can also run `snapr` using `submit_s3_snapr.sh` by passing in a file containing a list of s3 paths with the `-L s3_path_list.txt` option, like so:
 
 ```
-user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -L s3_path_list.txt
+user@master:/home/snapr_workflow# bash/submit_s3_snapr.sh -L s3_path_list.txt -o output_s3_path
 ```
 
-It is up to the user to ensure that both mates of the pairs of fastq files are in the file. The pairs in files don't need to be in sequence but the script automatically considers the first mate in the pair it sees as R1 so for consistency the R1 for a pair needs to come before the R2 in the file. Bam files can also be used in lists but not simultaneously with fastq files since the `-f` option informs the script which mode to run in. An example file for fastq files:
+In this usage the `-o` flag is not optional and the script will throw an error. In addition, it is up to the user to ensure that both mates of the pairs of fastq files are in the file. The pairs in files don't need to be in sequence but the script automatically considers the first mate in the pair it sees as R1 so for consistency the R1 for a pair needs to come before the R2 in the file. Bam files can also be used in lists but not simultaneously with fastq files since the `-f` option informs the script which mode to run in. An example file for fastq files:
 
 ```
 user@master:/snapr/snapr_workflow# head s3_path_list.txt
