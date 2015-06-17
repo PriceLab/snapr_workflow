@@ -71,7 +71,7 @@ if [ -z $S3_PATH ] && [ -z $OUTPUT_S3_PATH ]; then
     exit;
 fi
 
-if [ ! z $S3_PATH ] && [ -z $OUTPUT_S3_PATH ]; then
+if [ ! -z $S3_PATH ] && [ -z $OUTPUT_S3_PATH ]; then
     OUTPUT_S3_PATH=$S3_PATH;
 fi
     
