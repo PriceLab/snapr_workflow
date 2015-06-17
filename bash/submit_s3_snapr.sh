@@ -42,7 +42,7 @@ function usage {
     echo
 }
 
-while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
+while getopts "p:o:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
     case "$ARG" in
         p ) S3_PATH=$OPTARG;;
 	o ) OUTPUT_S3_PATH=$OPTARG;;
@@ -53,7 +53,7 @@ while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
         g ) GENOME=$OPTARG;;
         t ) TRANSCRIPTOME=$OPTARG;;
         x ) GTF_FILE=$OPTARG;;
-        p ) PROCS=$OPTARG;;
+        pr ) PROCS=$OPTARG;;
         q ) QUEUE=$OPTARG;;
         N ) NAME=$OPTARG;;
         M ) MEM=$OPTARG;;
