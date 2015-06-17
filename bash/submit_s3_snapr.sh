@@ -45,6 +45,7 @@ function usage {
 while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
     case "$ARG" in
         p ) S3_PATH=$OPTARG;;
+	o ) OUTPUT_S3_PATH=$OPTARG;;
         L ) IN_LIST=$OPTARG; FILE_LIST=$IN_LIST;;
         m ) MODE=$OPTARG;;
         f ) FORMAT=$OPTARG;;
@@ -65,9 +66,15 @@ while getopts "b:s:L:m:f:l:g:t:e:p:q:N:E:kdh" ARG; do
 done
 shift $(($OPTIND - 1))
 
-if [[ $S3_PATH != */ ]]; then
-    S3_PATH=$S3_PATH/
+if [ -z $S3_PATH ] && [ -z $OUTPUT_S3_PATH ]; then
+    echo "No -p S3_PATH or -o OUTPUT_S3_PATH was provided. Cannot continue";
+    exit;
 fi
+
+if [ ! z $S3_PATH ] && [ -z $OUTPUT_S3_PATH ]; then
+    OUTPUT_S3_PATH=$S3_PATH;
+fi
+    
 
 # Create and store initial unique id for this cluster
 echo $(($(date +'%s * 1000 + %-N / 1000000')))-$RANDOM > /home/run-id
@@ -111,13 +118,14 @@ cat > $QSUB_BASE <<EOF
 
 EOF
 
-
 ######## Assemble & prepare inputs for s3_snapr.bash ##########################
-
-BUCKET=s3://$(echo $S3_PATH | cut -d "/" -f 3)/
 
 # Search S3 bucket for files, if no input list is provided
 if [ ! -e "$FILE_LIST" ]; then
+    if [[ $S3_PATH != */ ]]; then
+        S3_PATH=$S3_PATH/
+    fi
+    BUCKET=s3://$(echo $S3_PATH | cut -d "/" -f 3)/
     # Get full list of all files from S3 bucket for the specified group
     FILE_LIST=`mktemp s3-seq-files.XXXXXXXX`
     echo bucket is $BUCKET
@@ -184,7 +192,7 @@ get_handle ${FILE_LIST} | uniq | while read HANDLE; do
     FILE_MATCH=$(grep $HANDLE $FILE_LIST)
 
     PATH1=$(echo $FILE_MATCH | awk '{print $1}')
-    INPUT="-d ${S3_PATH} -1 ${PATH1}"
+    INPUT="-d ${OUTPUT_S3_PATH} -1 ${PATH1}"
 
     # Define second input file path only if extension format is FASTQ (i.e.,
     # the reprocess flag is undefined) and mode is paired
