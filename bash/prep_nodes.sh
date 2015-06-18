@@ -139,6 +139,7 @@ fi
 
 export AWS_ACCESS_KEY_ID=$(head -1 /root/.isb)
 export AWS_SECRET_ACCESS_KEY=$(tail -1 /root/.isb)
+export AWS_DEFAULT_REGION=$(ec2metadata | grep availability-zone | cut -d ' ' -f 2)
 
 # Copy and rename assembly files from S3
 
