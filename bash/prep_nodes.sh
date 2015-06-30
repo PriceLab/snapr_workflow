@@ -142,7 +142,7 @@ export AWS_SECRET_ACCESS_KEY=$(tail -1 /root/.isb)
 export AWS_DEFAULT_REGION=$(echo `ec2metadata` | grep -o "availability-zone: us-[a-z]*-[12]" | cut -d " " -f 2)
 
 # Set root EBS volume to be deleted once the instance is deleted. Otherwise zombie EBS volumes get left around
-ec2-modify-instance-attribute -b "/dev/sda1=:true" --region us-west-1 --aws-access-key $(head -1 /root/.isb) --aws-secret-key $(tail -1 /root/.isb) $(wget -q -O - http://169.254.169.254/latest/meta-data/instance-id || die \"wget instance-id has failed: $?\")
+ec2-modify-instance-attribute -b "/dev/sda1=:true" --region $(echo `ec2metadata` | grep -o "availability-zone: us-[a-z]*-[12]" | cut -d " " -f 2) --aws-access-key $(head -1 /root/.isb) --aws-secret-key $(tail -1 /root/.isb) $(wget -q -O - http://169.254.169.254/latest/meta-data/instance-id || die \"wget instance-id has failed: $?\")
 
 # Copy and rename assembly files from S3
 
