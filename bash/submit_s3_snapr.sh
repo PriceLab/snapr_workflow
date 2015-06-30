@@ -20,7 +20,7 @@ FORMAT=fastq
 PAIR_LABEL="_R[1-2]_"
 
 # Default options for SGE/qsub parameters
-PROCS=16
+PROCS=`nproc`
 MEM="55.0G"
 NAME="s3_snapr"
 QUEUE=all.q
