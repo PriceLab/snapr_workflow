@@ -13,6 +13,8 @@ HUMAN_FASTA="Homo_sapiens.GRCh38.dna.SORTED.fa"
 HUMAN_GTF="Homo_sapiens.GRCh38.77.gtf"
 MOUSE_FASTA="Mus_musculus.GRCm38.75.dna.SORTED.fa"
 MOUSE_GTF="Mus_musculus.GRCm38.75.gtf"
+YEAST_FASTA="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa"
+YEAST_GTF="saccharomyces_cerevisiae_R64-1-1_20110208.gtf"
 TRANSCRIPTOME_BUILD_OUT=`mktemp tr.XXXXX`
 
 # Default for assuming input ref file is local or on S3
@@ -51,7 +53,7 @@ done
 shift $(($OPTIND - 1))
 
 
-######## Specify human or mouse specific options ##############################
+######## Specify human, mouse, or yeast specific options ##############################
 
 # Default reference paths
 case "$SPECIES" in
@@ -62,6 +64,10 @@ case "$SPECIES" in
     mouse )
         FASTA_SRC="${S3_BUCKET}/${SPECIES}/${MOUSE_FASTA}"
         GTF_SRC="${S3_BUCKET}/${SPECIES}/${MOUSE_GTF}"
+        ;;
+    yeast )
+        FASTA_SRC="${S3_BUCKET}/${SPECIES}/${YEAST_FASTA}"
+        GTF_SRC="${S3_BUCKET}/${SPECIES}/${YEAST_GTF}"
         ;;
 esac
 
