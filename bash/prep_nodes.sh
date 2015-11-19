@@ -14,7 +14,7 @@ HUMAN_GTF="Homo_sapiens.GRCh38.77.gtf"
 MOUSE_FASTA="Mus_musculus.GRCm38.75.dna.SORTED.fa"
 MOUSE_GTF="Mus_musculus.GRCm38.75.gtf"
 YEAST_FASTA="Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa"
-YEAST_GTF="Saccharomyces_cerevisiae_R64-1-1_20110208.gtf"
+YEAST_GTF="Saccharomyces_cerevisiae.R64-1-1.81.gtf"
 TRANSCRIPTOME_BUILD_OUT=`mktemp tr.XXXXX`
 
 # Default for assuming input ref file is local or on S3
